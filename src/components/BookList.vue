@@ -1,49 +1,104 @@
 <template>
   <div>
-    <h2>My Books</h2>
-    <ul>
+    <button @click="search">Search for Books</button>
+    <h1>My Books</h1>
+    <div v-if="isLoading">
+      <content-loader></content-loader>
+    </div>
+    <ul v-else-if="books.length > 0">
       <li v-for="book in books" :key="book.id">
-        <div>{{ book.title }} by {{ book.author }} ({{ book.publicationDate }})</div>
-        <button @click="viewBookDetails(book)">View Details</button>
-        <button @click="lendBook(book)">Lend Book</button>
+        <h2>{{ book.title }}</h2>
+        <p>by {{ book.author }}</p>
+        <img :src="book.thumbnail">
+        <p>{{ book.description }}</p>
+        <div>
+          <router-link :to="{ name: 'BookHistory', params: { bookId: book.id } }">
+            <button>Show History</button>
+          </router-link>
+          <button @click="removeBook(book)">Remove Book</button>
+          <select v-model="book.status" @change="updateBook(book)">
+            <option :value="false">Unavailable</option>
+            <option :value="true">Available</option>
+          </select>
+          <button @click="showRequests(book)">Requests</button>
+        </div>
       </li>
     </ul>
+    <p v-else>No books found.</p>
   </div>
 </template>
 
 <script>
-export default {
-  name: "BookList",
+import axios from '@/config/axios';
+import { ContentLoader } from 'vue-content-loader'
+import {router} from "@/router";
 
+export default {
+  components: {
+    ContentLoader,
+  },
   data() {
     return {
-      books: []
-    }
+      books: [],
+      isLoading: true
+    };
   },
   mounted() {
-    // Call your Symfony backend API here to get the list of user's books
-    // You can use Axios or another HTTP client library to make API requests
-    axios.get('/api/books')
-        .then(response => {
-          this.books = response.data;
-        })
-        .catch(error => {
-          console.log(error.response.data);
-        });
+    this.getBooks();
   },
   methods: {
-    viewBookDetails(book) {
-      // Emit an event to the parent component to display the book details
-      this.$emit('view-book-details', book);
+    getBooks() {
+      axios
+          .get('/books')
+          .then(response => {
+            this.books = response.data.map(book => ({
+              ...book,
+              status: book.status !== false,
+            }));
+          })
+          .catch(error => {
+            console.log(error);
+            alert('Error fetching book data.');
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
     },
-    lendBook(book) {
-      // Emit an event to the parent component to display the lend form
-      this.$emit('lend-book', book);
+    showHistory(book) {
+      alert(`History for book ${book.title}`);
+    },
+    removeBook(book) {
+      if (confirm(`Are you sure you want to remove ${book.title}?`)) {
+        axios
+            .post(`/books/${book.id}`)
+            .then(() => {
+              this.books = this.books.filter(b => b.id !== book.id);
+              alert('Book removed successfully!');
+            })
+            .catch(error => {
+              console.log(error);
+              alert('Error removing book.');
+            });
+      }
+    },
+    updateBook(book) {
+      axios
+          .put(`/books/${book.id}`, book)
+          .then(() => {
+            alert('Book updated successfully!');
+          })
+          .catch(error => {
+            console.log(error);
+            alert('Error updating book.');
+          });
+    },
+    showRequests(book) {
+      // TODO: Implement popup window to display requests for this book
+      alert(`Requests for book ${book.title}`);
+    },
+    search() {
+      router.push({ name: 'AddBook' })
     }
   }
-}
+};
 </script>
-
-<style scoped>
-
-</style>
