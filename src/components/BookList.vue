@@ -9,7 +9,12 @@
       <li v-for="book in books" :key="book.id">
         <h2>{{ book.title }}</h2>
         <p>by {{ book.author }}</p>
-        <img :src="book.thumbnail">
+        <template v-if="book.thumbnail.startsWith('http')">
+          <img :src="book.thumbnail">
+        </template>
+        <template v-else>
+          <img :src="parseBase64Image(book.thumbnail)">
+        </template>
         <p>{{ book.description }}</p>
         <div>
           <router-link :to="{ name: 'BookHistory', params: { bookId: book.id } }">
@@ -40,7 +45,8 @@ export default {
   data() {
     return {
       books: [],
-      isLoading: true
+      isLoading: true,
+      apiUrl: process.env.VUE_APP_API_URL
     };
   },
   mounted() {
@@ -63,6 +69,9 @@ export default {
           .finally(() => {
             this.isLoading = false;
           });
+    },
+    parseBase64Image(imageData) {
+      return `data:image/jpeg;base64,${imageData}`;
     },
     showHistory(book) {
       alert(`History for book ${book.title}`);
@@ -102,3 +111,10 @@ export default {
   }
 };
 </script>
+
+<style>
+li img {
+  width: 128px;
+  height: 193px;
+}
+</style>

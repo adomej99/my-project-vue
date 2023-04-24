@@ -6,8 +6,9 @@
         <h2>{{ book.title }}</h2>
         <img :src="book.thumbnail">
         <p>by {{ book.author }}</p>
-        <p>Return request sent by: {{ book.lendee.username }}</p>
+        <p>Return request sent by: <router-link target="_blank" :to="{ name: 'UserInfo', params: { userId: book.lendee.id }}"> {{ book.lendee.username }} </router-link></p>
         <button @click="acceptBook(book)">Accept Return</button>
+        <button @click="reportReturn(book)">Report Return</button>
       </li>
     </ul>
   </div>
@@ -42,20 +43,11 @@ export default {
           });
     },
 
-    // acceptBook(book) {
-    //   axios
-    //       .post(`/books/returned/${book.id}/accept`)
-    //       .then(() => {
-    //         alert('Book returned successfully!');
-    //         this.books = this.books.filter(b => b.id !== book.id);
-    //       })
-    //       .catch(error => {
-    //         console.log(error);
-    //         alert('Error returning book.');
-    //       });
-    // }
     acceptBook(book){
       router.push({ name: 'LendeeReviewForm', params: { bookId: book.bookId, userId: book.lendee.id, requestId: book.id} })
+    },
+    reportReturn(book){
+      router.push({ name: 'ReturnReport', params: { userId: book.lendee.id, requestId: book.id, ownerId: book.ownerId} })
     }
   }
 }

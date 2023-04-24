@@ -16,6 +16,13 @@ import BookLentList from "@/components/BookLentList.vue";
 import BookReturnList from "@/components/BookReturnList.vue";
 import RatingReviewForm from "@/components/RatingReviewForm.vue";
 import LendeeReviewForm from "@/components/LendeeReviewForm.vue";
+import UserInfo from "@/components/UserInfo.vue";
+import AdminPanel from "@/components/AdminPanel.vue";
+import AdminBooksLayout from "@/components/AdminBooksLayout.vue";
+import UserManagement from "@/components/UserManagement.vue";
+import ReturnReport from "@/components/ReturnReport.vue";
+import ReportManagement from "@/components/ReportManagement.vue";
+import ManualBookAdd from "@/components/ManualBookAdd.vue";
 
 const routes = [
     {
@@ -74,6 +81,11 @@ const routes = [
         component: AddBook
     },
     {
+        path: '/books/add',
+        name: 'ManualBookAdd',
+        component: ManualBookAdd
+    },
+    {
         path: '/book/:bookId/history',
         name: 'BookHistory',
         component: BookHistory
@@ -104,6 +116,36 @@ const routes = [
         name: 'LendeeReviewForm',
         component: LendeeReviewForm,
         props: true,
+    },
+    {
+        path: '/user/:userId/',
+        name: 'UserInfo',
+        component: UserInfo
+    },
+    {
+        path: '/admin/panel',
+        name: 'AdminPanel',
+        component: AdminPanel
+    },
+    {
+        path: '/admin/book_management',
+        name: 'BookManagement',
+        component: AdminBooksLayout,
+    },
+    {
+        path: '/admin/user_management',
+        name: 'UserManagement',
+        component: UserManagement,
+    },
+    {
+        path: '/users/report/:userId/:requestId/:ownerId',
+        name: 'ReturnReport',
+        component: ReturnReport,
+    },
+    {
+        path: '/admin/report_management',
+        name: 'ReportManagement',
+        component: ReportManagement,
     },
 ]
 

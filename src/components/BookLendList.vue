@@ -5,9 +5,20 @@
       <li v-for="book in books" :key="book.id">
         <h2>{{ book.title }}</h2>
         <p>by {{ book.author }}</p>
+        <div class="user-rating">
+          <div class="user-info">
+        <p>Book rating: </p>
+        <StarRating :rating="book.rating" />
+          </div>
+        </div>
         <img :src="book.thumbnail">
         <p>{{ book.description }}</p>
-        <p>Owner of the book: {{ book.owner }}</p>
+        <div class="user-rating">
+          <div class="user-info">
+            <p>Owner of the book: <router-link target="_blank" :to="{ name: 'UserInfo', params: { userId: book.owner.id }}"> {{ book.owner.username }} </router-link></p>
+            <StarRating :rating="book.owner.rating" />
+          </div>
+        </div>
         <button @click="showDatePicker(book)">Request Lend</button>
         <datepicker v-if="showDatepicker" v-model="selectedDate" />
       </li>
@@ -18,11 +29,16 @@
 <script>
 import axios from '@/config/axios';
 import Datepicker from "vue3-datepicker";
+// import StarRating from "@/components/StarRating.vue";
+import StarRating from '@/components/NewStarRating.vue'
+
+
 export default {
   name: "BookLendList",
 
   components: {
-    Datepicker
+    Datepicker,
+    StarRating,
   },
 
   data() {
@@ -80,3 +96,19 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.user-rating {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  margin-right: 10px;
+}
+</style>

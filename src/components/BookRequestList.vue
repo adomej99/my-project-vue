@@ -7,7 +7,12 @@
         <p>by {{ request.book.author }}</p>
         <img :src="request.book.thumbnail">
         <p>{{ request.book.description }}</p>
-        <p>Requested by {{ request.requestedBy }}</p>
+        <div class="user-rating">
+          <div class="user-info">
+            <p>Owner of the book: <router-link target="_blank" :to="{ name: 'UserInfo', params: { userId: request.requestedBy.id }}"> {{ request.requestedBy.username }} </router-link></p>
+            <StarRating :rating="request.requestedBy.rating" />
+          </div>
+        </div>
         <p>Requested date: {{ request.requestDate }}</p>
         <p>Return date: {{ request.returnDate }}</p>
         <button @click="acceptRequest(request)">Accept Request</button>
@@ -19,9 +24,15 @@
 
 <script>
 import axios from '@/config/axios';
+import StarRating from '@/components/NewStarRating.vue'
+
 
 export default {
   name: 'BookRequestsList',
+
+  components: {
+    StarRating,
+  },
 
   data() {
     return {
@@ -72,3 +83,19 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.user-rating {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  margin-right: 10px;
+}
+</style>
