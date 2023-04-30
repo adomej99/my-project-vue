@@ -9,10 +9,11 @@
         <p>{{ request.book.description }}</p>
         <div class="user-rating">
           <div class="user-info">
-            <p>Owner of the book: <router-link target="_blank" :to="{ name: 'UserInfo', params: { userId: request.requestedBy.id }}"> {{ request.requestedBy.username }} </router-link></p>
+            <p>Requested by: <router-link target="_blank" :to="{ name: 'UserInfo', params: { userId: request.requestedBy.id }}"> {{ request.requestedBy.username }} </router-link></p>
             <StarRating :rating="request.requestedBy.rating" />
           </div>
         </div>
+        <a :href="'tel:+' + request.requestedBy.phone">Call me {{ request.requestedBy.phone }}</a>
         <p>Requested date: {{ request.requestDate }}</p>
         <p>Return date: {{ request.returnDate }}</p>
         <button @click="acceptRequest(request)">Accept Request</button>
@@ -49,7 +50,6 @@ export default {
       axios.get('/books/requests')
           .then(response => {
             this.requests = response.data;
-            console.log(this.requests.book);
           })
           .catch(error => {
             console.log(error);

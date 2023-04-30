@@ -1,22 +1,37 @@
 <template>
-  <div>
-    <Navigation />
-    <router-view />
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="font-weight-bold mb-0">Home</h4>
+          </div>
+          <div class="card-body">
+            <p class="mb-0">Hello, welcome to my home library app!</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
-
-import Navigation from '@/components/NavbarComponent.vue'
-export default {
-  name: 'HomePage',
-  components: {
-    Navigation,
-  },
+<style>
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-</script>
 
+.card-header {
+  background-color: #ffffff;
+  border-bottom: none;
+}
 
-<style scoped>
+.card-body {
+  background-color: #ffffff;
+}
 
+h4 {
+  color: #1da1f2;
+}
 </style>

@@ -1,26 +1,59 @@
 <template>
   <div>
-    <h2>Books Available for Lending</h2>
-    <ul>
-      <li v-for="book in books" :key="book.id">
-        <h2>{{ book.title }}</h2>
-        <p>by {{ book.author }}</p>
-        <div class="user-rating">
-          <div class="user-info">
-        <p>Book rating: </p>
-        <StarRating :rating="book.rating" />
+    <h2 class="section-title">Books Available for Lending</h2>
+    <ul class="book-list">
+      <li v-for="book in books" :key="book.id" class="book-item">
+        <div class="book-header">
+          <div class="book-info">
+            <h2 class="book-title">{{ book.title }}</h2>
+            <p class="book-author">by {{ book.author }}</p>
+          </div>
+          <div class="book-actions">
+            <button class="btn-show-reviews" @click="showReviews[book.id] = !showReviews[book.id]">Show Reviews</button>
+            <button class="btn-request-lend" @click="showDatePicker(book)">Request Lend</button>
+            <datepicker v-if="showDatepicker" v-model="selectedDate" />
           </div>
         </div>
-        <img :src="book.thumbnail">
-        <p>{{ book.description }}</p>
-        <div class="user-rating">
-          <div class="user-info">
-            <p>Owner of the book: <router-link target="_blank" :to="{ name: 'UserInfo', params: { userId: book.owner.id }}"> {{ book.owner.username }} </router-link></p>
-            <StarRating :rating="book.owner.rating" />
+        <div class="book-body">
+          <div class="book-thumbnail">
+            <img :src="book.thumbnail">
+          </div>
+          <div class="book-details">
+            <div class="user-rating">
+              <div class="user-info">
+                <p class="book-rating">Book rating: </p>
+                <StarRating :rating="book.rating" />
+              </div>
+            </div>
+            <div class="user-rating">
+              <div class="user-info">
+                <p class="owner-title">Owner of the book:</p>
+                <p class="owner-name"><router-link target="_blank" :to="{ name: 'UserInfo', params: { userId: book.owner.id }}"> {{ book.owner.username }} </router-link></p>
+                <StarRating :rating="book.owner.rating" />
+              </div>
+            </div>
+            <p class="book-description">{{ book.description }}</p>
+            <div v-if="showReviews[book.id]">
+              <div v-if="book.reviews.length > 0">
+                <h3 class="review-title">Reviews:</h3>
+                <ul class="review-list">
+                  <li v-for="review in book.reviews" :key="review.review" class="review-item">
+                    <div class="review-header">
+                      <p class="reviewer-name">{{ review.reviewedBy }}</p>
+                      <div class="review-rating">
+                        <StarRating :rating="review.rating" />
+                      </div>
+                    </div>
+                    <p class="review-text">{{ review.review }}</p>
+                  </li>
+                </ul>
+              </div>
+              <div v-else>
+                <p class="no-review-text">No reviews yet.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <button @click="showDatePicker(book)">Request Lend</button>
-        <datepicker v-if="showDatepicker" v-model="selectedDate" />
       </li>
     </ul>
   </div>
@@ -47,16 +80,18 @@ export default {
       showDatepicker: false,
       selectedDate: '',
       selectedBook: null,
+      showReviews: {},
     }
   },
 
   mounted() {
-    this.fetchBooks()
+    const isbn = this.$route.params.isbn;
+    this.fetchBooks(isbn)
   },
 
   methods: {
-    fetchBooks() {
-      axios.get('/books/available')
+    fetchBooks(isbn) {
+      axios.get(`/books/available_isbn/${isbn}`)
           .then(response => {
             this.books = response.data;
           })
@@ -98,17 +133,124 @@ export default {
 </script>
 
 <style scoped>
-.user-rating {
-  display: flex;
-  align-items: center;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
+.book-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
-.username {
+.book-item {
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0.1);
+}
+
+.book-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.book-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.book-author {
+  margin: 0;
+  font-size: 14px;
+}
+
+.book-thumbnail img {
+  max-width: 100%;
+  height: auto;
+}
+
+.book-details {
+  padding: 10px;
+}
+
+.book-rating {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.owner-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.owner-name {
+  margin: 0;
+  font-size: 14px;
+}
+
+.review-title {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.review-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.review-item {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
+.reviewer-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.review-rating {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.review-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.btn-show-reviews,
+.btn-request-lend {
+  background-color: transparent;
+  border: none;
+  color: #1DA1F2;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
   margin-right: 10px;
 }
+
+.btn-show-reviews:hover,
+.btn-request-lend:hover {
+  text-decoration: underline;
+}
+
+.no-review-text {
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+}
+
 </style>
+

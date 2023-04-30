@@ -15,8 +15,23 @@
 </template>
 
 <script>
+import axios from '@/config/axios';
+
 export default {
   name: "AdminPanel",
+
+  beforeRouteEnter(to, from, next) {
+    axios.get('/user/role').then(response => {
+      if (response.data.indexOf('ROLE_ADMIN') !== -1) {
+        next()
+      } else {
+        next('/')
+      }
+    }).catch(error => {
+      console.log(error)
+      next('/')
+    })
+  }
 }
 </script>
 

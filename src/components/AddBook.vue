@@ -1,21 +1,23 @@
 <template>
   <div>
-    <h1>Book Search</h1>
-    <button @click="goBack">Back to Book List</button>
-    <form @submit.prevent="searchBooks">
-      <label>
+    <h1 class="page-title">Book Search</h1>
+    <button class="books-button" @click="goBack">Back to Book List</button>
+    <form class="search-form" @submit.prevent="searchBooks">
+      <label class="form-label">
         ISBN Code:
-        <input type="text" v-model="isbn" required>
+        <input class="form-input" type="text" v-model="isbn" required>
       </label>
-      <button type="submit">Search</button>
+      <button class="books-button" type="submit">Search</button>
     </form>
-    <ul v-if="books.length > 0">
-      <li v-for="book in books" :key="book.id">
-        <h2>{{ book.title }}</h2>
-        <p>by {{ book.author }}</p>
-        <img :src="book.thumbnail">
-        <p>{{ book.description }}</p>
-        <button @click="addBook(book)">Add Book</button>
+    <ul v-if="books.length > 0" class="book-search-results">
+      <li v-for="book in books" :key="book.id" class="book-search-item">
+        <h2 class="book-title">{{ book.title }}</h2>
+        <p class="book-author">by {{ book.author }}</p>
+        <div class="book-thumbnail">
+          <img :src="book.thumbnail">
+        </div>
+        <p class="book-description">{{ book.description }}</p>
+        <button class="books-button books-add-button" @click="addBook(book)">Add Book</button>
       </li>
     </ul>
     <p v-else>No books found.</p>
@@ -23,7 +25,9 @@
 </template>
 
 <script>
-import axios from '@/config/axios';
+import axios from 'axios';
+import axiosCustom from '@/config/axios';
+
 import {router} from "@/router";
 
 export default {
@@ -56,6 +60,7 @@ export default {
               author: item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : 'Unknown',
               thumbnail: item.volumeInfo.imageLinks ? item.volumeInfo.imageLinks.thumbnail : 'https://via.placeholder.com/128x192?text=No+Image',
               description: item.volumeInfo.description ? item.volumeInfo.description : 'No description available.',
+              isbn: item.volumeInfo.industryIdentifiers ? item.volumeInfo.industryIdentifiers.find(identifier => identifier.type === 'ISBN_13')?.identifier : 'No ISBN available'
             }));
           })
           .catch(error => {
@@ -69,9 +74,9 @@ export default {
         author: book.author,
         thumbnail: book.thumbnail,
         description: book.description,
-        userId: this.session.user_id
+        isbn: book.isbn
       };
-      axios
+      axiosCustom
           .post('/books/add_book', data)
           .then(() => {
             alert('Book added successfully!');
@@ -87,3 +92,84 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.page-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.books-button {
+  background-color: #1DA1F2;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.books-button:hover {
+  background-color: #0E71C8;
+}
+
+.search-form {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.form-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.book-search-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.book-search-item {
+  margin-bottom: 30px;
+}
+
+.book-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.book-author {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.book-thumbnail {
+  margin-bottom: 10px;
+}
+
+.book-thumbnail img {
+  max-width: 200px;
+}
+
+.book-description {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.books-add-button {
+  background-color: #1DA1F2;
+  margin-left: 10px;
+}
+
+.books-add-button:hover {
+  background-color: #0E71C8;
+}
+</style>

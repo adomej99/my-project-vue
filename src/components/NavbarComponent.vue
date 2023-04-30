@@ -21,7 +21,7 @@ export default {
     }
   },
   mounted() {
-    const session = localStorage.getItem('session');
+    const session = localStorage.getItem('token');
     if (session) {
       this.session = JSON.parse(session);
     }
