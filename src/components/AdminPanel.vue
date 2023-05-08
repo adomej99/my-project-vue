@@ -8,7 +8,7 @@
       <router-link to="/admin/user_management">User Management</router-link>
     </div>
     <div>
-      <router-link to="/admin/report-management">Report Management</router-link>
+      <router-link to="/admin/report_management">Report Management</router-link>
     </div>
     <router-view></router-view>
   </div>

@@ -62,7 +62,6 @@
 <script>
 import axios from '@/config/axios';
 import Datepicker from "vue3-datepicker";
-// import StarRating from "@/components/StarRating.vue";
 import StarRating from '@/components/NewStarRating.vue'
 
 

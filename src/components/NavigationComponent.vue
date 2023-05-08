@@ -1,19 +1,11 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">Home</a>
-    <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-    >
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav mr-auto">
         <li v-if="!isLoggedIn" class="nav-item">
           <router-link to="/login" class="nav-link">Login</router-link>
         </li>
@@ -33,10 +25,13 @@
           <router-link to="/books/available" class="nav-link">Available Books</router-link>
         </li>
         <li v-if="isLoggedIn" class="nav-item">
-          <router-link to="/books/requests" class="nav-link">Return Requests</router-link>
+          <router-link to="/books/requests" class="nav-link">Requests</router-link>
         </li>
         <li v-if="isLoggedIn" class="nav-item">
-          <router-link to="/books/returned" class="nav-link">Return Books</router-link>
+          <router-link to="/lent" class="nav-link">Currently Borrowing</router-link>
+        </li>
+        <li v-if="isLoggedIn" class="nav-item">
+          <router-link to="/books/returned" class="nav-link">Return Requests</router-link>
         </li>
         <li v-if="isAdmin" class="nav-item">
           <router-link to="/admin/panel" class="nav-link">Admin Panel</router-link>
@@ -59,6 +54,7 @@
           </div>
         </li>
       </ul>
+      <p>Welcome, {{ username }}!</p>
     </div>
   </nav>
 </template>
@@ -66,7 +62,19 @@
 <script>
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import axios from '@/config/axios';
+import $ from 'jquery';
+import jwtDecode from "jwt-decode";
+window.$ = $;
+window.jQuery = $;
+
+$(document).ready(function() {
+  $('.navbar-toggler').on('click', function() {
+    var target = $(this).data('target');
+    $(target).toggleClass('show');
+  });
+});
 
 export default {
   name: 'NavigationComponent',
@@ -77,6 +85,7 @@ export default {
       showNotifications: false,
       expiredRequests: [],
       isAdmin: false,
+      username: null,
     }
   },
   computed: {
@@ -88,10 +97,8 @@ export default {
   created() {
     window.addEventListener('storage', this.onStorageChange);
 
-    this.loadUserRole();
-
     if (this.isLoggedIn) {
-      console.log(this.isLoggedIn);
+      this.loadUserRole();
       this.loadExpiredRequests();
     } else {
       this.expiredRequests = [];
@@ -101,8 +108,6 @@ export default {
   watch: {
     '$route': function() {
       this.isLoggedIn = localStorage.getItem('access_token') !== null;
-      // this.loadExpiredRequests();
-      console.log("route");
     },
     isLoggedIn(newValue) {
       if (newValue) {
@@ -117,13 +122,10 @@ export default {
 
   methods: {
     logout() {
-      // remove token from local storage
       this.isLoggedIn = false;
       this.isAdmin = false;
 
-
       localStorage.removeItem('access_token');
-      // redirect to login page
       this.expiredRequests = [];
       this.$router.push('/login');
     },
@@ -137,19 +139,21 @@ export default {
           });
     },
     onStorageChange(event) {
-      // check if access_token item changed
       if (event.key === 'access_token') {
         const newToken = event.newValue;
         if (newToken) {
-          // user logged in, load expired requests
           this.loadExpiredRequests();
         } else {
-          // user logged out, clear expired requests
           this.expiredRequests = [];
         }
       }
     },
     loadUserRole() {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        const decoded = jwtDecode(token);
+        this.username = decoded.username;
+      }
       axios.get('/user/role')
           .then(response => {
             if (response.data.indexOf('ROLE_ADMIN') !== -1) {

@@ -6,8 +6,10 @@
       <label class="form-label">
         ISBN Code:
         <input class="form-input" type="text" v-model="isbn" required>
+        <input class="form-input" type="text" v-model="isbn" @input="startBarcodeScanner" required>
       </label>
       <button class="books-button" type="submit">Search</button>
+      <div id="scanner-container"></div>
     </form>
     <ul v-if="books.length > 0" class="book-search-results">
       <li v-for="book in books" :key="book.id" class="book-search-item">
@@ -27,7 +29,7 @@
 <script>
 import axios from 'axios';
 import axiosCustom from '@/config/axios';
-
+import Quagga from 'quagga';
 import {router} from "@/router";
 
 export default {
@@ -44,6 +46,9 @@ export default {
     if (session) {
       this.session = JSON.parse(session);
     }
+  },
+  destroy() {
+    Quagga.stop();
   },
   methods: {
     searchBooks() {
@@ -88,7 +93,28 @@ export default {
     },
     goBack(){
       router.push({ name: 'BookList' })
-    }
+    },
+    startBarcodeScanner() {
+      Quagga.init({
+        inputStream : {
+          name : "Live",
+          type : "LiveStream"
+        },
+        decoder : {
+          readers : ["code_128_reader"]
+        },
+        locate: true,
+        numOfWorkers: 4,
+        frequency: 10,
+        target: '#scanner-container'
+      }, function(err) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        Quagga.start();
+      });
+    },
   }
 };
 </script>

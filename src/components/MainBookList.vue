@@ -7,6 +7,10 @@
           <button>Show Books With No Isbn Provided</button>
         </router-link>
       </div>
+      <div class="search">
+        <input type="text" v-model="searchQuery" placeholder="Search...">
+        <button @click="searchBooks">Search</button>
+      </div>
     </div>
 
     <div v-if="isLoading">
@@ -52,6 +56,7 @@ export default {
     return {
       books: [],
       isLoading: true,
+      searchQuery: '',
     };
   },
   mounted() {
@@ -60,7 +65,7 @@ export default {
   methods: {
     getBooks() {
       axios
-          .get('/books/available')
+          .get(`/books/available?search=${this.searchQuery}`)
           .then(response => {
             this.books = response.data.map(book => ({
               ...book,
@@ -73,6 +78,10 @@ export default {
           .finally(() => {
             this.isLoading = false;
           });
+    },
+    searchBooks() {
+      this.isLoading = true;
+      this.getBooks();
     },
     parseBase64Image(imageData) {
       return `data:image/jpeg;base64,${imageData}`;

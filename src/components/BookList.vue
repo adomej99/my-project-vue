@@ -6,6 +6,10 @@
       <button class="books-button" @click="lent">Show My Lent Books</button>
     </div>
     <h1>My Books</h1>
+    <div>
+      <input type="text" v-model="searchQuery" placeholder="Search...">
+      <button class="books-button" @click="searchBooks">Search</button>
+    </div>
     <div v-if="isLoading">
       <content-loader></content-loader>
     </div>
@@ -52,6 +56,7 @@ export default {
     return {
       books: [],
       isLoading: true,
+      searchQuery: '',
     };
   },
   mounted() {
@@ -60,7 +65,7 @@ export default {
   methods: {
     getBooks() {
       axios
-          .get(`/books/`)
+          .get(`/books/?search=${this.searchQuery}`)
           .then(response => {
             this.books = response.data.map(book => ({
               ...book,
@@ -74,6 +79,10 @@ export default {
           .finally(() => {
             this.isLoading = false;
           });
+    },
+    searchBooks() {
+      this.isLoading = true;
+      this.getBooks();
     },
     parseBase64Image(imageData) {
       return `data:image/jpeg;base64,${imageData}`;
@@ -97,6 +106,18 @@ export default {
           .put(`/books/${book.id}`, book)
           .then(() => {
             alert('Book updated successfully!');
+            this.books = this.books.map(b => {
+              if (b.id === book.id) {
+                return {
+                  ...b,
+                  title: book.title,
+                  author: book.author,
+                  status: book.status !== true,
+                  image: book.image,
+                };
+              }
+              return b;
+            });
           })
           .catch(error => {
             console.log(error);

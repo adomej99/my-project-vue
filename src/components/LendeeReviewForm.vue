@@ -1,22 +1,34 @@
 <template>
-  <div>
-    <h2>Rate and Review Book</h2>
-    <form @submit.prevent="submitForm">
-      <div>
-        <label for="lenderRating">Rate the lender:</label>
-        <select v-model="lenderRating" id="lenderRating" name="lenderRating">
-          <option value="1">1 star</option>
-          <option value="2">2 stars</option>
-          <option value="3">3 stars</option>
-          <option value="4">4 stars</option>
-          <option value="5">5 stars</option>
-        </select>
+  <div class="card">
+    <div class="header">
+      <h2>Rate lendee</h2>
+    </div>
+    <form class="form" @submit.prevent="submitForm">
+      <div class="rating-section">
+        <label for="lenderRating">Select rating:</label>
+        <div class="rating-container">
+          <button type="button" class="star" :class="{ 'star-filled': lenderRating >= 1 }" @click="lenderRating = 1">
+            <i class="fas fa-star"></i>
+          </button>
+          <button type="button" class="star" :class="{ 'star-filled': lenderRating >= 2 }" @click="lenderRating = 2">
+            <i class="fas fa-star"></i>
+          </button>
+          <button type="button" class="star" :class="{ 'star-filled': lenderRating >= 3 }" @click="lenderRating = 3">
+            <i class="fas fa-star"></i>
+          </button>
+          <button type="button" class="star" :class="{ 'star-filled': lenderRating >= 4 }" @click="lenderRating = 4">
+            <i class="fas fa-star"></i>
+          </button>
+          <button type="button" class="star" :class="{ 'star-filled': lenderRating >= 5 }" @click="lenderRating = 5">
+            <i class="fas fa-star"></i>
+          </button>
+        </div>
       </div>
-      <div>
-        <label for="lenderReview">Write a review for the lender:</label>
+      <div class="form-group">
+        <label for="lenderReview">Write a review for lendee:</label>
         <textarea v-model="lenderReview" id="lenderReview" name="lenderReview"></textarea>
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" class="submit-button">Submit</button>
     </form>
   </div>
 </template>
@@ -39,8 +51,6 @@ export default {
 
   data() {
     return {
-      bookRating: '',
-      bookReview: '',
       lenderRating: '',
       lenderReview: '',
     };
@@ -65,3 +75,67 @@ export default {
   },
 };
 </script>
+
+<style>
+.card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 10px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+form label {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+form select,
+form textarea {
+  display: block;
+  margin-bottom: 1rem;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 1rem;
+}
+
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border: 2px solid #1DA1F2;
+}
+
+form button[type="submit"] {
+  background-color: #1DA1F2;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+  background-color: #0E71C8;
+}
+
+textarea {
+  background-color: #DCDCDC;
+}
+</style>

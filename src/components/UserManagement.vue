@@ -40,7 +40,7 @@ export default {
 
     showReports(userId) {
       // Navigate to the ReportManagement page with the userId as a parameter
-      this.$router.push({ path: '/admin/report-management', query: { userId: userId } });
+      this.$router.push({ path: '/admin/report_management', query: { userId: userId } });
     },
 
     toggleUserStatus(userId) {
