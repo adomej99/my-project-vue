@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>My lent books</h2>
+    <h2>My pending requests</h2>
     <ul>
       <li v-for="request in requests" :key="request.id">
         <h2>{{ request.book.title }}</h2>

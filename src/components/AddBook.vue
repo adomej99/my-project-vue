@@ -6,7 +6,6 @@
       <label class="form-label">
         ISBN Code:
         <input class="form-input" type="text" v-model="isbn" required>
-        <input class="form-input" type="text" v-model="isbn" @input="startBarcodeScanner" required>
       </label>
       <button class="books-button" type="submit">Search</button>
       <div id="scanner-container"></div>
@@ -121,40 +120,58 @@ export default {
 
 <style scoped>
 .page-title {
-  font-size: 32px;
-  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 24px;
 }
 
 .books-button {
-  background-color: #1DA1F2;
+  display: inline-block;
+  background-color: #1da1f2;
   color: white;
   border: none;
   border-radius: 9999px;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 12px 24px;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  margin-right: 10px;
+  margin-right: 16px;
+  margin-bottom: 24px;
+  transition: background-color 0.2s;
 }
 
 .books-button:hover {
-  background-color: #0E71C8;
+  background-color: #0e71c8;
 }
 
 .search-form {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 48px;
 }
 
 .form-label {
-  font-size: 20px;
-  margin-right: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 16px;
+  text-align: left;
 }
 
 .form-input {
-  padding: 8px;
+  flex: 1;
+  max-width: 400px;
+  height: 40px;
+  padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 24px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: #1da1f2;
 }
 
 .book-search-results {
@@ -164,38 +181,82 @@ export default {
 }
 
 .book-search-item {
-  margin-bottom: 30px;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #eee;
 }
 
 .book-title {
   font-size: 24px;
-  margin-bottom: 10px;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
 .book-author {
   font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.book-thumbnail {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+  color: #555;
 }
 
 .book-thumbnail img {
+  display: block;
   max-width: 200px;
+  height: auto;
+  margin-bottom: 16px;
 }
 
 .book-description {
-  font-size: 16px;
-  margin-bottom: 20px;
+  font-size: 18px;
+  margin-bottom: 24px;
+  color: #333;
 }
 
 .books-add-button {
-  background-color: #1DA1F2;
-  margin-left: 10px;
+  display: inline-block;
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 16px;
+  transition: background-color 0.2s;
 }
 
 .books-add-button:hover {
-  background-color: #0E71C8;
+  background-color: #0e71c8;
 }
+
+@media (max-width: 768px) {
+  .form-label {
+    font-size: 16px;
+  }
+
+  .form-input {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .book-title {
+    font-size: 20px;
+  }
+
+  .book-author {
+    font-size: 16px;
+  }
+
+  .book-description {
+    font-size: 16px;
+  }
+
+  .books-button,
+  .books-add-button {
+    font-size: 16px;
+    padding: 8px 16px;
+    margin-right: 8px;
+  }
+}
+
 </style>

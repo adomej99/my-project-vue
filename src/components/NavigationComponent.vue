@@ -54,7 +54,7 @@
           </div>
         </li>
       </ul>
-      <p>Welcome, {{ username }}!</p>
+      <p v-if="isLoggedIn">Welcome, {{ username }}!</p>
     </div>
   </nav>
 </template>
