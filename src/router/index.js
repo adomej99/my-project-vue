@@ -3,8 +3,6 @@ import HomePage from '@/components/HomePage.vue'
 import LoginPage from '@/components/LoginPage.vue'
 import RegisterPage from '@/components/RegisterPage.vue'
 import BookList from "@/components/BookList.vue";
-import ReviewList from "@/components/ReviewList.vue";
-import ReviewForm from "@/components/ReviewForm.vue";
 import AddBook from "@/components/AddBook.vue";
 import BookHistory from "@/components/BookHistory.vue";
 import BookLendList from "@/components/BookLendList.vue";
@@ -56,18 +54,6 @@ const routes = [
         path: '/lent',
         name: 'BookLentList',
         component: BookLentList,
-        meta: { requiresAuth: true }
-    },
-    {
-        path: '/reviews',
-        name: 'ReviewList',
-        component: ReviewList,
-        meta: { requiresAuth: true }
-    },
-    {
-        path: '/reviews/new',
-        name: 'ReviewForm',
-        component: ReviewForm,
         meta: { requiresAuth: true }
     },
     {
