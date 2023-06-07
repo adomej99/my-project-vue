@@ -29,9 +29,18 @@
           </div>
         </div>
         <div class="book-body">
-          <div class="book-thumbnail">
-            <img :src="book.thumbnail" alt="book-thumbnail">
-          </div>
+<!--          <template v-if="book.thumbnail.startsWith('http')">-->
+<!--            <img :src="book.thumbnail">-->
+<!--          </template>-->
+<!--          <template v-else>-->
+<!--            <img :src="getPhotoUrl(book)">-->
+<!--          </template>-->
+          <template v-if="book.thumbnail.startsWith('http')">
+            <img :src="book.thumbnail" :alt="book.title" />
+          </template>
+          <template v-else>
+            <img :src="parseBase64Image(book.thumbnail)" :alt="book.title" />
+          </template>
           <div class="book-details">
             <p class="book-description">{{ book.description }}</p>
           </div>
@@ -61,6 +70,23 @@ export default {
   },
   mounted() {
     this.getBooks();
+    this.books.forEach(book => {
+      if (!book.thumbnail.startsWith('http')) {
+        this.getPhotoUrl(book);
+      }
+    });
+  },
+  watch: {
+    books: {
+      immediate: true,
+      handler(newBooks) {
+        newBooks.forEach(book => {
+          if (!book.thumbnail.startsWith('http')) {
+            this.getPhotoUrl(book);
+          }
+        });
+      }
+    }
   },
   methods: {
     getBooks() {
@@ -86,6 +112,32 @@ export default {
     },
     parseBase64Image(imageData) {
       return `data:image/jpeg;base64,${imageData}`;
+    },
+    fetchPhotoUrl(book) {
+      // Make an API request to fetch the photo URL from your backend
+      axios
+          .get(`/books/${book.id}/image`)
+          .then(response => {
+            book.thumbnailUrl = response.data.photoUrl;
+          })
+          .catch(error => {
+            console.error(error);
+            // Handle error
+          });
+    },
+    getPhotoUrl(book) {
+      axios
+          .get(`/books/${book.id}/image`)
+          .then(response => {
+            // Assuming the response contains the photo URL
+            const photoUrl = response.data.photoUrl;
+            // Update the book object with the photo URL
+            book.thumbnail = photoUrl;
+          })
+          .catch(error => {
+            console.error(error);
+            // Handle error
+          });
     },
     removeBook(book) {
       if (confirm(`Are you sure you want to remove ${book.title}?`)) {

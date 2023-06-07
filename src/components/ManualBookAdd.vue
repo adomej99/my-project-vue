@@ -71,7 +71,7 @@ export default {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.previewImage = e.target.result;
-        this.thumbnailB64 = e.target.result;
+        this.thumbnailB64 = e.target.result.split(',')[1];
       };
       reader.readAsDataURL(this.$refs.fileInput.files[0]);
       this.thumbnail = this.$refs.fileInput.files[0];

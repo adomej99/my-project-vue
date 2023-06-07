@@ -62,7 +62,33 @@ export default {
   mounted() {
     this.getBooks();
   },
+  watch: {
+    books: {
+      immediate: true,
+      handler(newBooks) {
+        newBooks.forEach(book => {
+          if (!book.thumbnail.startsWith('http')) {
+            this.getPhotoUrl(book);
+          }
+        });
+      }
+    }
+  },
   methods: {
+    getPhotoUrl(book) {
+      axios
+          .get(`/books/${book.id}/main/image`)
+          .then(response => {
+            // Assuming the response contains the photo URL
+            const photoUrl = response.data.photoUrl;
+            // Update the book object with the photo URL
+            book.thumbnail = photoUrl;
+          })
+          .catch(error => {
+            console.error(error);
+            // Handle error
+          });
+    },
     getBooks() {
       axios
           .get(`/books/available?search=${this.searchQuery}`)

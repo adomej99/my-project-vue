@@ -16,7 +16,12 @@
         </div>
         <div class="book-body">
           <div class="book-thumbnail">
-            <img :src="book.thumbnail">
+            <template v-if="book.thumbnail.startsWith('http')">
+              <img :src="book.thumbnail" :alt="book.title" />
+            </template>
+            <template v-else>
+              <img :src="parseBase64Image(book.thumbnail)" :alt="book.title" />
+            </template>
           </div>
           <div class="book-details">
             <div class="user-rating">
@@ -99,6 +104,25 @@ export default {
           });
     },
 
+    getPhotoUrl(book) {
+      axios
+          .get(`/books/${book.id}/image`)
+          .then(response => {
+            // Assuming the response contains the photo URL
+            const photoUrl = response.data.photoUrl;
+            // Update the book object with the photo URL
+            book.thumbnail = photoUrl;
+          })
+          .catch(error => {
+            console.error(error);
+            // Handle error
+          });
+    },
+
+    parseBase64Image(imageData) {
+      return `data:image/jpeg;base64,${imageData}`;
+    },
+
     showDatePicker(book) {
       this.showDatepicker = true;
       this.selectedBook = book;
@@ -125,6 +149,16 @@ export default {
     selectedDate(newVal) {
       if (newVal) {
         this.requestLend(this.selectedBook, newVal);
+      }
+    },
+    books: {
+      immediate: true,
+      handler(newBooks) {
+        newBooks.forEach(book => {
+          if (!book.thumbnail.startsWith('http')) {
+            this.getPhotoUrl(book);
+          }
+        });
       }
     }
   }
